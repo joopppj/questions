@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>📘 题型分页练习 · 扫码自测</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, Helvetica, sans-serif;
+            background: #f5f7fa;
+            padding: 20px 16px 40px;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+            padding: 28px 22px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            color: #0f172a;
+            letter-spacing: -0.01em;
+        }
+
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e9edf4;
+            padding-bottom: 12px;
+        }
+        .tab-btn {
+            background: white;
+            border: 1.5px solid #dce3ec;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #4b5565;
+            cursor: pointer;
+            transition: 0.15s;
+            flex: 0 1 auto;
+        }
+        .tab-btn.active {
+            background: #1e40af;
+            border-color: #1e40af;
+            color: white;
+        }
+
+        .page {
+            display: none;
+        }
+        .page.active-page {
+            display: block;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px 18px;
+            margin-bottom: 18px;
+            border: 1px solid #e9edf4;
+            transition: all 0.15s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+        }
+
+        .question-card:hover {
+            border-color: #cbd5e1;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .q-num {
+            background: #f1f4f9;
+            color: #334155;
+            padding: 5px 12px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .q-type {
+            background: white;
+            color: #4b5565;
+            font-size: 0.8rem;
+            border: 1px solid #d1d9e6;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        .page[data-page="3"] .q-type {
+            display: none;
+        }
+
+        .q-text {
+            font-weight: 500;
+            color: #0a1e3c;
+            margin-bottom: 18px;
+            font-size: 1.05rem;
+            line-height: 1.45;
+            white-space: pre-line;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-left: 6px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fafcff;
+            padding: 8px 14px;
+            border-radius: 14px;
+            border: 1px solid transparent;
+            transition: 0.1s;
+        }
+
+        .option-item:hover {
+            background: #f0f4fe;
+            border-color: #b9d1fb;
+        }
+
+        .option-item input {
+            width: 20px;
+            height: 20px;
+            accent-color: #2563eb;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .option-item input[type="checkbox"] {
+            border-radius: 4px;
+        }
+
+        .option-label {
+            font-size: 1.02rem;
+            color: #1e2b3c;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 16px;
+            margin: 32px 0 28px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            background: white;
+            padding: 16px 28px;
+            border-radius: 60px;
+            font-size: 1.08rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1.5px solid #dce3ec;
+            color: #1e293b;
+            flex: 1 1 auto;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .btn-primary {
+            background: #1e40af;
+            border: 1.5px solid #1e40af;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1.5px solid #cbd5e1;
+            color: #0f172a;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .score-panel {
+            background: linear-gradient(145deg, #f1f6fe, #ffffff);
+            border-radius: 26px;
+            padding: 22px 20px;
+            margin: 12px 0 20px;
+            border: 1px solid #dee9fc;
+        }
+
+        .score-number {
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: #0f3c7a;
+            line-height: 1;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .score-total {
+            font-size: 1.5rem;
+            color: #475569;
+        }
+
+        .mistake-info {
+            color: #b45347;
+            background: #fff5f2;
+            padding: 14px 18px;
+            border-radius: 16px;
+            margin-top: 12px;
+            border-left: 5px solid #dc2626;
+        }
+
+        .answer-hint {
+            background: #fef9ee;
+            border-left: 6px solid #eab308;
+            padding: 16px 18px;
+            border-radius: 14px;
+            margin-top: 20px;
+            font-size: 0.98rem;
+            color: #2d3a4f;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .explanation-text {
+            background: #f0f4fa;
+            padding: 12px 14px;
+            border-radius: 12px;
+            color: #1e3a6b;
+            font-size: 0.95rem;
+            border-left: 4px solid #2563eb;
+            white-space: pre-line;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            color: #6b7a8e;
+            font-size: 0.85rem;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 20px 14px; }
+            .btn { padding: 14px 18px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📖 综合练习题一 · 四合一</h1>
+
+    <div class="tab-nav">
+        <div class="tab-btn active" data-page="0">① 单选</div>
+        <div class="tab-btn" data-page="1">② 多选</div>
+        <div class="tab-btn" data-page="2">③ 判断</div>
+        <div class="tab-btn" data-page="3">④ 不定项</div>
+    </div>
+
+    <div id="page0" class="page active-page" data-page="0"></div>
+    <div id="page1" class="page" data-page="1"></div>
+    <div id="page2" class="page" data-page="2"></div>
+    <div id="page3" class="page" data-page="3"></div>
+
+    <div class="button-group">
+        <button class="btn btn-primary" id="checkBtn">✅ 查答案 / 批改</button>
+        <button class="btn btn-secondary" id="resetBtn">🔄 重置本页</button>
+    </div>
+
+    <div id="resultArea"></div>
+    
+    <div class="footer-note">
+        ⚡ 点击「查答案」—— 只批改当前显示页的题目，错题下方显示正确答案及解析
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 📚 题库：包含题目、选项、正确答案、解析 ----------
+        const questionBank = [
+            // 页0 —— 单选
+            { id: 1, page: 0, type: 'single', 
+              text: '下列各项中，企业计提由其负担的研发中心职工社会保险费和住房公积金，应借记的会计科目是（ ）。', 
+              options: ['A.财务费用', 'B.销售费用', 'C.其他业务成本', 'D.研发支出'], 
+              correct: 'D.研发支出',
+              explanation: '期末，对于企业应缴纳的社会保险费(不含基本养老保险费和失业保险费)和住房公积金，应按照规定的计提基础和比例，在职工提供服务期间根据受益对象计入当期损益或相关资产成本，确认相应的应付职工薪酬金额。借记“生产成本”“制造费用”“销售费用”“在建工程”“研发支出”等科目，贷记“应付职工薪酬—社会保险费、住房公积金”等科目。' },
+            { id: 2, page: 0, type: 'single', 
+              text: '下列行为中，属于会计工作社会监督的是（ ）。', 
+              options: ['A.市财政部门监督甲公司的会计行为', 'B.乙基金会会计机构审核收到的原始凭证', 'C.县税务机关检查戊企业的涉税会计资料', 'D.丙会计师事务所审计丁公司的年度财务会计报告'], 
+              correct: 'D.丙会计师事务所审计丁公司的年度财务会计报告', 
+              explanation: '' },
+            { id: 3, page: 0, type: 'single', 
+              text: '甲公司月末的编制试算平衡表中，全部会计科目的本期贷方发生额合计为150万元,除“原材料”科目外，其他会计科目的本期借方发生额合计为138万元,则“原材料”科目( )。', 
+              options: ['A.本期借方发生额12万元', 'B.本期贷方发生额12万元', 'C.本期借方余额12万元', 'D.本期贷方余额12万元'], 
+              correct: 'A.本期借方发生额12万元', 
+              explanation: '试算平衡表发生额编制依据是“有借必有贷，借贷必相等”，即“全部账户本期借方发生额合计=全部账户本期贷方发生额合计”，所以“原材料”本期借方发生额=150-138=12（万元）。' },
+
+            { id: 4, page: 0, type: 'single', 
+              text: '企业到外地进行临时或零星采购， 而汇往采购地银行开立采购专戶的款项应计入( )。', 
+              options: ['A.银行存款', 'B.应付账款', 'C.其他货币资金', 'D.其他应收款'], 
+              correct: 'C.其他货币资金', 
+              explanation: '其他货币资金是指企业除库存现金、银行存款以外的其他各种货币资金，主要包括银行汇票存款、银行本票存款、信用卡存款、信用证保证金存款、存出投资款和外埠存款等。外埠存款是指企业为了到外地进行临时或零星采购，而汇往采购地银行开立采购专户的款项，属于其他货币资金。故选项C正确。' },
+
+            { id: 5, page: 0, type: 'single', 
+              text: '甲有限责任公司2025年1月1日向银行借入一笔生产经营用短期借款共计120 000万元， 借款期限为9个月,年利率为4%。根据与银行的协议约定，该项借款的本金到期后一次归还，利息按季支付。则3月末应冲减应付利息科目的金额为（ ）万元。', 
+              options: ['A.800', 'B.400', 'C.1200', 'D.0'], 
+              correct: 'A.800', 
+              explanation: '2025年1月和2月计提银行利息时：借：财务费用 400[(120000×4%÷12)] 贷：应付利息 400。由于利息按季支付，所以3月末支付利息时：借：财务费用 400，应付利息 800，贷：银行存款 1200。' },
+
+            { id: 6, page: 0, type: 'single', 
+              text: '甲公司于2025年12月1日从证券市场上购入A公司发行在外的股票100万股， 划为交易性金融资产核算。购入时每股支付价款10元，另支付相关交易费用20万元；2025年12月31日,该部分股票的公允价值为1 060万元。不考虑其他因素,则2025年12月31日,甲公司应确认的公允价值变动损益为（ ）万元。', 
+              options: ['A.60', 'B.-60', 'C.40', 'D.-40'], 
+              correct: 'A.60', 
+              explanation: '2025年12月1日购入时：借：交易性金融资产——成本 1000（100×10），投资收益 20，贷：银行存款 1020。2025年12月31日：借：交易性金融资产——公允价值变动 60，贷：公允价值变动损益 60。' },
+
+            { id: 7, page: 0, type: 'single', 
+              text: '下列经济业务中,按照权责发生制应计入当期收入的是（ ）。', 
+              options: ['A.本月收到甲企业上月的货款', 'B.本月销售一批商品给乙企业,款项尚未收回', 'C.本月收回去年支付给乙企业的保证金', 'D.本月收到甲企业预付下月的货款'], 
+              correct: 'B.本月销售一批商品给乙企业,款项尚未收回', 
+              explanation: '权责发生制，是指以取得收取款项的权利或支付款项的义务为标志来确定本期收入和费用的会计基础。选项B，本月销售商品，应于本月确认销售收入。' },
+
+            { id: 8, page: 0, type: 'single', 
+              text: '甲公司预收货款业务不多的，可以不单独设置 “预收账款 ”科目,在其发生预收货款业务时， 可通过（ ）科目核算。', 
+              options: ['A.应收账款', 'B.其他应收款', 'C.应付账款', 'D.预付账款'], 
+              correct: 'A.应收账款', 
+              explanation: '甲公司预收货款业务不多，可以不单独设置“预收账款”科目，在其发生预收货款业务时，通过“应收账款”科目贷方核算。' },
+
+            { id: 9, page: 0, type: 'single', 
+              text: '下列各项中，属于内部控制中内部环境要素的是（ ）。', 
+              options: ['A.人力资源政策', 'B.会计系统控制', 'C.风险识别', 'D.自我评价'], 
+              correct: 'A.人力资源政策', 
+              explanation: '内部控制中内部环境主要包括治理结构、组织机构设置与权责分配、企业文化、人力资源政策（选项A）、内部审计机构设置、反舞弊机制等。' },
+
+            { id: 10, page: 0, type: 'single', 
+              text: '2025年9月1日,某企业向银行借入生产经营周转用借款200000元，期限2个月,年利率6%， 该借款利息按月计提、到期一次还本付息。11月1日,该企业以银行存款偿还借款本息的会计处理正确的是（ ）。', 
+              options: ['A.借 :短期借款 200000 贷 :银行存款 200000', 'B.借：短期借款   200000 应付利息  2000 贷 : 银行存款 202000', 'C.借 :短期借款 200000 财务费用 2000 贷 :银行存款 202000', 'D.借 :短期借款 202000 贷 :银行存款202000'], 
+              correct: 'B.借：短期借款   200000 应付利息  2000 贷 : 银行存款 202000', 
+              explanation: '每月应计提的利息金额=200000×6%÷12=1000（元）。企业以银行存款偿还借款本息的会计分录：借：短期借款 200000，应付利息 2000，贷：银行存款 202000。' },
+
+            { id: 11, page: 0, type: 'single', 
+              text: '2025年初，某企业未分配利润为300万元，本年实现净利润200万元，提取盈余公积20万元， 以未分配利润支付现金股利90万元。不考虑其他因素， 2025年12月31日该企业未分配利润余额为（ ）万元。', 
+              options: ['A.390', 'B.410', 'C.480', 'D.500'], 
+              correct: 'A.390', 
+              explanation: '未分配利润=可供分配利润-提取法定盈余公积-提取任意盈余公积-向投资者分配利润。可供分配利润=当年实现的净利润(或净亏损)+年初未分配利润(或-年初未弥补亏损)+其他转入(如盈余公积补亏)。2025年12月31日，该企业未分配利润余额=300+200-20-90=390(万元)。' },
+
+            { id: 12, page: 0, type: 'single', 
+              text: '2025年5月25日,甲公司向乙公司赊销一批商品，开具的增值税专用发票上注明的售价为50000元、增值税税额为6500元，甲公司垫付运费200元。该批商品于当日发出并办妥托收手续， 符合收入确认条件。不考虑其他因素，甲公司销售该批商品确认应收账款的金额为（ ）元。', 
+              options: ['A.56 500', 'B.50 200', 'C.56 700', 'D.50 000'], 
+              correct: 'C.56 700', 
+              explanation: '会计分录如下：借：应收账款 56 700，贷：主营业务收入 50 000，应交税费—应交增值税(销项税额) 6 500，银行存款 200。' },
+
+            { id: 13, page: 0, type: 'single', 
+            text: '下列各项中，不符合会计软件具有的功能是( )。', 
+            options: ['A.为会计核算、财务管理直接采集数据', 'B.对生成会计资料审核、标记、更新', 'C.生成会计凭证、账簿、报表等会计资料', 'D.对会计资料进行转换、输出、分析、利用'], 
+            correct: 'B.对生成会计资料审核、标记、更新', 
+            explanation: '会计软件一般具有以下功能：①为会计核算、财务管理直接采集数据（选项A）；②生成会计凭证、账簿、报表等会计资料（选项C）；③对会计资料进行转换、输出、分析、利用（选项D）。选项B不符合，故选B。' },
+
+            { id: 14, page: 0, type: 'single', 
+            text: '下列各项中,企业对很可能承担环保责任确认预计负债,主要遵循的会计信息质量要求是( )。', 
+            options: ['A.可靠性', 'B.重要性', 'C.谨慎性', 'D.实质重于形式'], 
+            correct: 'C.谨慎性', 
+            explanation: '谨慎性要求企业对交易或事项进行会计确认、计量、记录和报告应当保持应有的谨慎，不应高估资产或者收益、低估负债或者费用。企业对很可能承担环保责任确认预计负债，遵循谨慎性要求。故选C。' },
+
+            { id: 15, page: 0, type: 'single', 
+            text: '企业将 “净利润调节为经营活动的现金流量"项目时， 需要在净利润基础上减计的是（ ）。', 
+            options: ['A.当期发生的无形资产的摊销额', 'B.处置固定资产的净损失', 'C.交易性金融资产的公允价值变动收益', 'D.当期计提的存货跌准备'], 
+            correct: 'C.交易性金融资产的公允价值变动收益', 
+            explanation: '选项A：无形资产的摊销额减少净利润，但无实际现金流出，应调增；选项B：处置固定资产的净损失属于投资活动，但减少净利润，应调增；选项C：交易性金融资产的公允价值变动收益属于投资活动，但增加净利润，应调减；选项D：存货跌价准备无实际现金流出，但减少净利润，应调增。故选C。' },
+
+            { id: 16, page: 0, type: 'single', 
+            text: '某股份有限公司发行普通股 30000 万股， 每股面值为1元,发行价格为3元， 发行股票的手续费为1900万元,扣除手续费的发行所得款项已存入银行， 不考虑其他因素。下列各项中,关于该公司发行股票会计处理表述正确的是( )。', 
+            options: ['A.借记 “银行存款"科目 90000 万元', 'B.贷记“股本"科目  90000 万元', 'C.借记 “财务费用 ”科目 1900 万元', 'D.贷记 “资本公积"科目58100万元'], 
+            correct: 'D.贷记 “资本公积"科目58100万元', 
+            explanation: '发行股票会计处理：借：银行存款 90000（30000×3），贷：股本 30000（30000×1），资本公积——股本溢价 60000。支付手续费：借：资本公积——股本溢价 1900，贷：银行存款 1900。合并后：借：银行存款 88100，贷：股本 30000，资本公积——股本溢价 58100。故选D。' },
+
+            { id: 17, page: 0, type: 'single', 
+            text: '甲公司自行研发一项技术，研究阶段发生支出 100万元， 其中研究费 60万元，分配职工薪酬 40万元。进入开发阶段，在开发阶段共发生支出150万元， 其中90万元符合资本化条件，非专利技术达到预定可使用状态。不考虑其他因素，非专利技术的入账价值是( )万元。', 
+            options: ['A.150', 'B.0', 'C.90', 'D.190'], 
+            correct: 'C.90', 
+            explanation: '研究阶段的支出100万元和开发阶段不符合资本化条件的支出60万元，均先记入“研发支出——费用化支出”科目，期末转入“管理费用”；只有开发阶段满足资本化条件的支出90万元才计入无形资产的成本。故选C。' },
+
+            { id: 18, page: 0, type: 'single', 
+            text: '2025 年 12 月1日,某企业“其他应收款"科目借方余额为 10万元，12月份发生有关业务如下:销售商品并为客戶代垫运费2万元，收回为职工垫付的房租4万元，租入包装物支付押金1万元，不考虑其他因素，该企业 2025年12月31日“其他应收款"科目的借方余额为 ( )万元。', 
+            options: ['A.9', 'B.6', 'C.7', 'D.11'], 
+            correct: 'C.7', 
+            explanation: '销售商品并为客户代垫运费2万元应计入应收账款，收回为职工垫付的房租4万元使其他应收款减少，租入包装物支付押金1万元使其他应收款增加。2025年12月31日“其他应收款”科目借方余额=10-4+1=7（万元）。' },
+
+            { id: 19, page: 0, type: 'single', 
+            text: '下列各项中，属于按成因分类的内部控制缺陷是( )。', 
+            options: ['A.一般缺陷', 'B.重大缺陷', 'C.重要缺陷', 'D.设计缺陷'], 
+            correct: 'D.设计缺陷', 
+            explanation: '内部控制缺陷按其成因分为设计缺陷和运行缺陷。按其对实现内部控制目标的影响程度分为重大缺陷、重要缺陷和一般缺陷。故选D。' },
+
+            { id: 20, page: 0, type: 'single', 
+            text: '下列各项中，应当根据总账科目余额直接填列资产负债表的项目是( )。', 
+            options: ['A.应收账款', 'B.短期借款', 'C.固定资产', 'D.应付账款'], 
+            correct: 'B.短期借款', 
+            explanation: '选项AC：应当根据有关科目余额减去其备抵科目余额后的净额填列；选项B：应当根据总账科目余额直接填列；选项D：应当根据明细账科目余额计算填列。综上所述，选项B符合题意。' },
+
+            // 页1 —— 多选
+            { id: 21, page: 1, type: 'multiple', 
+              text: '下列各项中，会引起企业期末存货账面价值变动的有（ ）。', 
+              options: ['A.已确认销售收入但尚未发出商品', 'B.已发出商品但尚未确认销售收入', 'C.已收到发票账单并付款但尚未收到材料', 'D.已收到材料但尚未收到发票账单'], 
+              correct: ['A.已确认销售收入但尚未发出商品', 'C.已收到发票账单并付款但尚未收到材料', 'D.已收到材料但尚未收到发票账单'], 
+              explanation: '选项B，企业发出商品但是尚未确认销售收入，应通过“发出商品”科目核算。借记“发出商品”科目，贷记“库存商品”科目，而“发出商品”科目的期末余额应并入资产负债表中的“存货”项目反映，存货项目金额一增一减，不会引起企业期末存货账面价值变动。' },
+
+            { id: 22, page: 1, type: 'multiple', 
+              text: '在实际成本核算方式下， 企业可以采用的发出存货成本的计价方法有（ ）。', 
+              options: ['A.个别计价法', 'B.先进先出法', 'C.月末一次加权平均法', 'D.移动加权平均法'], 
+              correct: ['A.个别计价法', 'B.先进先出法', 'C.月末一次加权平均法', 'D.移动加权平均法'], 
+              explanation: '在实际成本核算方式下，企业应当采用的发出存货成本的计价方法有个别计价法、先进先出法、月末一次加权平均法和移动加权平均法。' },
+
+            { id: 23, page: 1, type: 'multiple', 
+              text: '关于包装物会计处理表述正确的有（ ）。', 
+              options: ['A.随同产品出售单独计价的包装物成本计入销售费用', 'B.出借包装物摊销额计入销售费用', 'C.生产领用包装物计入生产成本', 'D.出租包装物摊销计入其他业务成本'], 
+              correct: ['B.出借包装物摊销额计入销售费用', 'C.生产领用包装物计入生产成本', 'D.出租包装物摊销计入其他业务成本'], 
+              explanation: '选项A，随同产品出售单独计价的包装物成本计入其他业务成本。' },
+
+            { id: 24, page: 1, type: 'multiple', 
+              text: '下列各项中，应通过“其他应付款 ”科目核算的有（ ）。', 
+              options: ['A.应付已宣告但尚未发放的现金股利', 'B.应付工人工资', 'C.出借包装物收取的押金', 'D.应付租入包装物租金'], 
+              correct: ['C.出借包装物收取的押金', 'D.应付租入包装物租金'], 
+              explanation: '选项A，通过“应付股利”科目核算；选项B，通过“应付职工薪酬”科目核算；选项CD，均通过“其他应付款”科目核算。' },
+
+            { id: 25, page: 1, type: 'multiple', 
+              text: '下列各项中，会引起所有者权益总额发生变动的有（ ）。', 
+              options: ['A.回购股票', 'B.按面值发行股票', 'C.资本公积转增实收资本', 'D.宣告发放现金股利'], 
+              correct: ['A.回购股票', 'B.按面值发行股票', 'D.宣告发放现金股利'], 
+              explanation: '选项A正确，借记“库存股”科目，贷记“银行存款”科目，库存股是所有者权益备抵账户，库存股增加，所有者权益总额减少。选项B正确，借记“银行存款”科目，贷记“股本”科目，所有者权益总额增加。选项C错误，借记“资本公积”科目贷记“实收资本”科目，所有者权益内部一增一减，所有者权益总额不变。选项D正确，借记“利润分配—应付现金股利或利润”科目，贷记“应付股利”科目，所有者权益金额减少。' },
+
+            { id: 26, page: 1, type: 'multiple', 
+              text: '下列各项中，属于政府会计主体非流动资产的有( )。', 
+              options: ['A.公共基础设施', 'B.文物文化资产', 'C.政府储备资产', 'D.保障性住房'], 
+              correct: ['A.公共基础设施', 'B.文物文化资产', 'C.政府储备资产', 'D.保障性住房'], 
+              explanation: '政府会计主体的非流动资产是指流动资产以外的资产，包括固定资产、在建工程、无形资产、长期投资、公共基础设施、文物文化资产、政府储备资产、保障性住房和自然资源资产等。' },
+
+            { id: 27, page: 1, type: 'multiple', 
+              text: '下列各项中，企业出售无形资产的会计处理表述正确的有( )。', 
+              options: ['A.按照已计提的累计摊销额借记“累计摊销"科目', 'B.出售无形资产的净损失借记“营业外支出”科目', 'C.按照已计提的减值准备借记“无形资产减值准备”科目', 'D.按照无形资产的账面余额贷记“无形资产"科目'], 
+              correct: ['A.按照已计提的累计摊销额借记“累计摊销"科目', 'C.按照已计提的减值准备借记“无形资产减值准备”科目', 'D.按照无形资产的账面余额贷记“无形资产"科目'], 
+              explanation: '出售无形资产时：借：银行存款等，累计摊销，无形资产减值准备，贷：无形资产，资产处置损益（或借方）。' },
+
+            { id: 28, page: 1, type: 'multiple', 
+              text: '下列各项中，关于财产清查的表述正确的有( )。', 
+              options: ['A.年终决算前，需对企业的财产物资进行全面清查', 'B.库存现金清查时出纳人员应在现场', 'C.应收账款适合采用发函询证的方式清查', 'D.银行存款余额调节表是调整银行存款日记账记账错误的依据'], 
+              correct: ['A.年终决算前，需对企业的财产物资进行全面清查', 'B.库存现金清查时出纳人员应在现场', 'C.应收账款适合采用发函询证的方式清查'], 
+              explanation: '选项A正确，年终决算前，需要对企业所有的财产进行全面的盘点和核对；选项B正确，对库存现金进行盘点时，出纳人员必须在场，有关业务必须在库存现金日记账中全部登记完毕；选项C正确，往来款项的清查一般采用发函询证的方法进行核对；选项D错误，“银行存款余额调节表”只是为了核对账目，不能作为调整企业银行存款账面记录的记账依据。' },
+
+            { id: 29, page: 1, type: 'multiple', 
+              text: '下列各项中，属于制造企业产品成本计算方法的有( )。', 
+              options: ['A.品种法', 'B.先进先出法', 'C.分步法', 'D.分批法'], 
+              correct: ['A.品种法', 'C.分步法', 'D.分批法'], 
+              explanation: '制造企业一般按照产品品种、批次订单或生产步骤等确定产品成本核算对象，对应所采用的产品成本计算方法为：品种法、分步法和分批法；选项B属于发出存货的计价方法。' },
+
+            { id: 30, page: 1, type: 'multiple', 
+              text: '下列各项中，属于其他货币资金的有( )。', 
+              options: ['A.外埠存款', 'B.信用卡存款', 'C.信用证保证金存款', 'D.银行本票存款'], 
+              correct: ['A.外埠存款', 'B.信用卡存款', 'C.信用证保证金存款', 'D.银行本票存款'], 
+              explanation: '其他货币资金是指企业除库存现金、银行存款以外的其他各种货币资金，主要包括银行汇票存款、银行本票存款、信用卡存款、信用证保证金存款、存出投资款和外埠存款等。' },
+                        
+            // 页2 —— 判断
+
+            { id: 31, page: 2, type: 'truefalse', 
+            text: '企业回购股票但未注销时， 应冲减股本总额。', 
+            options: ['正确', '错误'], 
+            correct: '错误', 
+            explanation: '企业回购股票但未注销时，借记“库存股”科目贷记“银行存款”等科目，不涉及“股本”科目，即不会影响股本总额。' },
+
+            { id: 32, page: 2, type: 'truefalse', 
+            text: '月末，企业对已验收入库但发票账单未收到且其货款尚未支付的材料，应按其暂估价值入账。', 
+            options: ['正确', '错误'], 
+            correct: '正确', 
+            explanation: '材料已验收入库，但发票账单尚未收到时，月末应按暂估价值入账，下月初用红字冲销原暂估入账金额，待收到发票账单后再按实际金额记账。' },
+
+            { id: 33, page: 2, type: 'truefalse', 
+            text: '综合收益总额需要在所有者权益变动表单独列⽰。', 
+            options: ['正确', '错误'], 
+            correct: '正确', 
+            explanation: '在所有者权益变动表上，企业至少应当单独列示反映下列信息的项目：（1）综合收益总额；（2）会计政策变更和差错更正的累积影响金额；（3）所有者投入资本和向所有者分配利润等；（4）提取的盈余公积；（5）实收资本、其他权益工具、资本公积、其他综合收益、专项储备、盈余公积、未分配利润的期初和期末余额及其调节情况。' },
+
+            { id: 34, page: 2, type: 'truefalse', 
+            text: '会计账簿和记账凭证之间的核对属于账账核对。', 
+            options: ['正确', '错误'], 
+            correct: '错误', 
+            explanation: '会计账簿和记账凭证之间的核对属于账证核对，不属于账账核对。账账核对是指不同账簿之间的核对。' },
+
+            { id: 35, page: 2, type: 'truefalse', 
+            text: '企业合并发生的审计、法律服务、评估咨询等中介费用以及其他相关管理费用计入长期股权投资的初始投资成本。', 
+            options: ['正确', '错误'], 
+            correct: '错误', 
+            explanation: '企业为企业合并发生的审计、法律服务、评估咨询等中介费用以及其他相关管理费用应作为当期损益计入管理费用。故本题表述错误。' },
+
+            { id: 36, page: 2, type: 'truefalse', 
+            text: '企业应将确认的预计产品质量保证损失计入销售费用。', 
+            options: ['正确', '错误'], 
+            correct: '正确', 
+            explanation: '企业应将确认的预计产品质量保证损失计入销售费用。' },
+
+            { id: 37, page: 2, type: 'truefalse', 
+            text: '企业集中管控型财务共享中心,能够实时生成各分、子公司财务信息，提高企业总部财务管控的效率。', 
+            options: ['正确', '错误'], 
+            correct: '正确', 
+            explanation: '集中管控型财务共享中心，能够实时生成各分、子公司财务信息，极大提高企业总部财务管控的效率，增强企业风险防范能力。' },
+
+            { id: 38, page: 2, type: 'truefalse', 
+            text: '银行存款余额调节表是调整企业银行存款日记账的记账依据。', 
+            options: ['正确', '错误'], 
+            correct: '错误', 
+            explanation: '“银行存款余额调节表”只是为了核对账目，不能作为调整企业银行存款账面记录的记账依据。故本题表述错误。' },
+
+            { id: 39, page: 2, type: 'truefalse', 
+            text: '企业为特定客戶设计产品所发生的， 可直接确定的设计费用,应计入存货成本。', 
+            options: ['正确', '错误'], 
+            correct: '正确', 
+            explanation: '' },
+
+            { id: 40, page: 2, type: 'truefalse', 
+            text: '企业无力支付到期的银行承兑汇票， 企业应将应付票据的账面余额转作短期借款。', 
+            options: ['正确', '错误'], 
+            correct: '正确', 
+            explanation: '' },
+
+            // 页3 —— 不定项
+            { id: 41, page: 3, type: 'multiple', 
+              text: '（一）甲公司与乙公司、丙公司为非同一控制下的三家独立公司。2024年至2025年，甲公司股权投资相关业务如下：\n(1) 2024年1月10日，甲公司以银行存款230万元取得乙公司25%的有表决权股份，乙公司成为其联营企业。当日，乙公司的可辨认净资产公允价值为1000万元，与账面价值相符。\n(2) 2024年6月30日，甲公司以其拥有的无形资产对丙公司投资，取得丙公司60%的股权，且能够对丙公司实施控制。该无形资产原值为900万元，已计提累计摊销100万元、计提减值准备60万元，投资日该无形资产的公允价值为750万元。当日，丙公司的可辨认净资产公允价值为100万元。\n(3) 2024年度乙公司实现净利润100万元，丙公司实现净利润200万元。\n(4) 2025年3月10日，乙公司宣告分派现金股利80万元。3月20日，甲公司收到乙公司发放的现金股利并存入银行。\n要求：根据上述资料，不考虑相关税费及其他因素，分析回答下列小题。（答案中的金额单位用万元表示）\n41.根据期初资料和资料(1)，下列各项中，关于甲公司对乙公司股权投资会计处理正确的是（ ）。', 
+              options: ['A.借：长期股权投资 250 贷：银行存款 230 投资收益 20', 'B.借：长期股权投资 250 贷：银行存款 230 其他综合收益 20', 'C.借：长期股权投资 230 贷：银行存款 230', 'D.借：长期股权投资 20 贷：营业外收入 20'], 
+              correct: ['C.借：长期股权投资 230 贷：银行存款 230', 'D.借：长期股权投资 20 贷：营业外收入 20'], 
+              explanation: '' },
+
+            { id: 42, page: 3, type: 'multiple', 
+              text: '42.根据期初资料和资料(2)，下列各项中，甲公司以无形资产对丙公司投资会计处理表述正确的是（ ）。', 
+              options: ['A.借记“累计摊销”科目100万元', 'B.借记“长期股权投资”科目600万元', 'C.贷记“无形资产”科目900万元', 'D.借记“长期股权投资”科目750万元'], 
+              correct: ['A.借记“累计摊销”科目100万元', 'C.贷记“无形资产”科目900万元', 'D.借记“长期股权投资”科目750万元'], 
+              explanation: '甲公司对丙公司投资为非同一控制下企业合并，应以无形资产公允价值750万元作为长期股权投资成本。会计分录：借：长期股权投资 750，累计摊销 100，无形资产减值准备 60，贷：无形资产 900，资产处置损益 10。' },
+
+            { id: 43, page: 3, type: 'multiple', 
+              text: '43.根据期初资料、资料(1)至(3)，下列各项中，2024年12月31日甲公司确认投资收益会计处理正确的是（ ）。', 
+              options: ['A.借：长期股权投资——乙公司——损益调整 25 贷：投资收益 25', 'B.借：长期股权投资——乙公司——损益调整 100 贷：投资收益 100', 'C.借：长期股权投资——乙公司——损益调整 120 贷：投资收益 120', 'D.借：长期股权投资——乙公司——损益调整 200 贷：投资收益 200'], 
+              correct: ['A.借：长期股权投资——乙公司——损益调整 25 贷：投资收益 25'], 
+              explanation: '甲公司对乙公司采用权益法核算，应确认投资收益=乙公司净利润100万元×25%=25万元。丙公司采用成本法核算，不确认投资收益。' },
+
+            { id: 44, page: 3, type: 'multiple', 
+              text: '44.根据期初资料、资料(1)和(4)，下列各项中，甲公司确认应收股利和收取现金股利会计处理表述正确的是（ ）。', 
+              options: ['A.3月10日，借记“应收股利”科目20万元', 'B.3月20日，借记“银行存款”科目20万元', 'C.3月20日，贷记“应收股利”科目20万元', 'D.3月10日，贷记“投资收益”科目20万元'], 
+              correct: ['A.3月10日，借记“应收股利”科目20万元', 'B.3月20日，借记“银行存款”科目20万元', 'C.3月20日，贷记“应收股利”科目20万元', 'D.3月10日，贷记“投资收益”科目20万元'], 
+              explanation: '乙公司宣告分派现金股利80万元，甲公司持股25%，应确认应收股利20万元，同时确认投资收益。收到时冲减应收股利。' },
+
+            { id: 45, page: 3, type: 'multiple', 
+              text: '45.根据期初资料、资料(1)至(4)，下列各项中，甲公司2025年3月31日资产负债表中“长期股权投资”项目“期末余额”栏的填列金额是（ ）万元。', 
+              options: ['A.975', 'B.995', 'C.1005', 'D.985'], 
+              correct: ['C.1005'], 
+              explanation: '长期股权投资余额=对乙公司投资初始调整后250万元（230+20）+确认投资收益25万元-收到现金股利20万元+对丙公司投资750万元=250+25-20+750=1005万元。' },
+
+            // 46-50 题（基于资料二）
+            { id: 46, page: 3, type: 'multiple', 
+              text: '（二）甲公司是一家装修企业，为增值税一般纳税人，2025年12月该公司发生如下业务：\n(1) 1日，甲公司通过竞标与乙公司签订一项服务期为20个月的装修合同，合同约定不含税装修价款为3200万元。为取得该合同，甲公司支付因投标而发生的差旅费6万元，支付咨询费3万元，另支付促成合同的中介机构佣金15万元，全部款项通过银行存款支付。甲公司预期上述支出未来均能收回。\n(2) 当月，甲公司为履行与乙公司的合同，累计发生装修成本100万元，其中：装修人员薪酬为50万元，水电费为10万元，装修设备折旧费为40万元。水电费已通过银行存款支付，装修人员薪酬尚未支付。为完成该合同甲公司估计还将发生装修成本1900万元。\n(3) 31日，甲公司收到乙公司支付的合同价款160万元和增值税税额14.4万元，全部款项已收存银行并开具增值税专用发票给乙公司。甲公司确认当月合同收入并结转合同履约成本，采用与相关合同收入确认相同的基础对合同取得成本、合同履约成本进行摊销。该装修合同属于在某一时段内履行的单项履约义务，甲公司按照累计实际发生的成本占预计总成本的比例确定履约进度。\n要求：根据上述资料，不考虑其他因素，分析回答下列小题。（答案中的金额单位用万元表示）\n46.根据资料(1)，下列各项中，甲公司为取得合同发生的支出会计处理正确的是（ ）。', 
+              options: ['A.支付促成合同的中介机构佣金时：借：管理费用 15 贷：银行存款 15', 'B.支付咨询费时：借：管理费用 3 贷：银行存款 3', 'C.支付促成合同的中介机构佣金时：借：合同取得成本 15 贷：银行存款 15', 'D.支付因投标而发生的差旅费时：借：管理费用 6 贷：银行存款 6'], 
+              correct: ['B.支付咨询费时：借：管理费用 3 贷：银行存款 3', 'C.支付促成合同的中介机构佣金时：借：合同取得成本 15 贷：银行存款 15', 'D.支付因投标而发生的差旅费时：借：管理费用 6 贷：银行存款 6'], 
+              explanation: '根据收入准则，销售人员佣金计入合同取得成本，差旅费和咨询费计入管理费用。' },
+
+            { id: 47, page: 3, type: 'multiple', 
+              text: '47.根据资料(2)，下列各项中，关于甲公司发生装修成本会计处理表述正确的是（ ）。', 
+              options: ['A.借记“合同履约成本”科目100万元', 'B.贷记“累计折旧”科目40万元', 'C.贷记“应付职工薪酬”科目50万元', 'D.贷记“银行存款”科目10万元'], 
+              correct: ['A.借记“合同履约成本”科目100万元', 'B.贷记“累计折旧”科目40万元', 'C.贷记“应付职工薪酬”科目50万元', 'D.贷记“银行存款”科目10万元'], 
+              explanation: '发生装修成本：借：合同履约成本 100，贷：应付职工薪酬 50，银行存款 10，累计折旧 40。' },
+
+            { id: 48, page: 3, type: 'multiple', 
+              text: '48.根据资料(1)至(3)，下列各项中，关于甲公司确认当月合同收入并结转当月合同履约成本的会计处理正确的是（ ）。', 
+              options: ['A.结转当月合同履约成本：借：主营业务成本 160 贷：合同履约成本 160', 'B.确认当月合同收入：借：银行存款 174.4 贷：主营业务收入 100 应交税费——应交增值税(销项税额) 14.4 合同负债 60', 'C.确认当月合同收入：借：银行存款 174.4 贷：主营业务收入 160 应交税费——应交增值税(销项税额) 14.4', 'D.结转当月合同履约成本：借：主营业务成本 100 贷：合同履约成本 100'], 
+              correct: ['C.确认当月合同收入：借：银行存款 174.4 贷：主营业务收入 160 应交税费——应交增值税(销项税额) 14.4', 'D.结转当月合同履约成本：借：主营业务成本 100 贷：合同履约成本 100'], 
+              explanation: '履约进度=100÷(100+1900)=5%，确认收入=3200×5%=160万元，结转成本=2000×5%=100万元。' },
+
+            { id: 49, page: 3, type: 'multiple', 
+              text: '49.根据资料(1)至(3)，下列各项中，关于甲公司合同取得成本摊销的会计处理表述正确的是（ ）。', 
+              options: ['A.贷记“合同取得成本”科目0.75万元', 'B.借记“销售费用”科目0.75万元', 'C.贷记“合同取得成本”科目1.05万元', 'D.借记“管理费用”科目0.9万元'], 
+              correct: ['A.贷记“合同取得成本”科目0.75万元', 'B.借记“销售费用”科目0.75万元'], 
+              explanation: '合同取得成本摊销额=15×5%=0.75万元，借记“销售费用”，贷记“合同取得成本”。' },
+
+            { id: 50, page: 3, type: 'multiple', 
+              text: '50.根据资料(1)至(3)，甲公司相关业务对2025年12月利润表“营业利润”项目的影响金额是（ ）万元。', 
+              options: ['A.60', 'B.36', 'C.50.25', 'D.51'], 
+              correct: ['C.50.25'], 
+              explanation: '对营业利润的影响：-3（咨询费）-6（差旅费）+160（收入）-100（成本）-0.75（合同取得成本摊销）=50.25万元。' },
+
+            // 51-55 题（基于资料三）
+            { id: 51, page: 3, type: 'multiple', 
+              text: '（三）2025年3月份，职工薪酬如下：\n(1) 本月应付职工工资总额为400万元，“工资费用分配汇总表”中列示的产品生产工人工资为300万元，车间管理人员工资为20万元，企业行政管理人员工资为50万元，专设销售机构人员工资为30万元。\n(2) 企业下设一所职工食堂，按每月每位在岗职工200元补贴给食堂，每月以银行存款支付。企业在岗职工共计300人，其中产品生产工人200人，车间管理人员10人，行政管理人员60人，专设销售机构人员30人。\n(3) 企业行政部门经理10人，企业为其每人提供一辆自有汽车免费使用，每辆汽车每月计提折旧2000元。企业为产品生产工人租赁一栋宿舍楼，每月租金50000元，由企业承担租金，以银行存款按月支付。\n要求：根据上述资料，不考虑其他因素，分析回答下列小题。（答案中的金额单位用万元表示）\n51.根据资料(1)，下列各项中，关于该企业分配3月份职工工资的会计处理表述正确的是（ ）。', 
+              options: ['A.借记“生产成本”科目300万元', 'B.贷记“应付职工薪酬”科目400万元', 'C.借记“销售费用”科目30万元', 'D.借记“管理费用”科目70万元'], 
+              correct: ['A.借记“生产成本”科目300万元', 'B.贷记“应付职工薪酬”科目400万元', 'C.借记“销售费用”科目30万元'], 
+              explanation: '分配工资：借：生产成本300，制造费用20，管理费用50，销售费用30，贷：应付职工薪酬400。' },
+
+            { id: 52, page: 3, type: 'multiple', 
+              text: '52.根据资料(2)，下列各项中，关于该企业确认并支付职工食堂补贴的会计处理正确的是（ ）。', 
+              options: ['A.确认补贴时：借：生产成本4 管理费用2 贷：其他应付款6', 'B.确认补贴时：借：生产成本4 制造费用0.2 管理费用1.2 销售费用0.6 贷：应付职工薪酬——职工福利费6', 'C.支付补贴时：借：其他应付款6 贷：银行存款6', 'D.支付补贴时：借：应付职工薪酬——职工福利费6 贷：银行存款6'], 
+              correct: ['B.确认补贴时：借：生产成本4 制造费用0.2 管理费用1.2 销售费用0.6 贷：应付职工薪酬——职工福利费6', 'D.支付补贴时：借：应付职工薪酬——职工福利费6 贷：银行存款6'], 
+              explanation: '职工食堂补贴属于职工福利，通过“应付职工薪酬”核算。分配：生产工人200×0.02=4万元，车间管理人员10×0.02=0.2万元，行政管理人员60×0.02=1.2万元，销售机构人员30×0.02=0.6万元。' },
+
+            { id: 53, page: 3, type: 'multiple', 
+              text: '53.根据资料(3)，非货币性福利账务处理正确的是（ ）。', 
+              options: ['A.确认提供汽车非货币性福利：借：管理费用2 贷：应付职工薪酬2', 'B.支付宿舍楼租金：借：应付职工薪酬5 贷：银行存款5', 'C.折旧费：借：管理费用2 贷：累计折旧2', 'D.确认福利：借：管理费用5 贷：应付职工薪酬5'], 
+              correct: ['A.确认提供汽车非货币性福利：借：管理费用2 贷：应付职工薪酬2', 'B.支付宿舍楼租金：借：应付职工薪酬5 贷：银行存款5'], 
+              explanation: '提供汽车非货币性福利：借：管理费用2（10×0.2），贷：应付职工薪酬2；计提折旧：借：应付职工薪酬2，贷：累计折旧2。为工人租赁宿舍：借：生产成本5，贷：应付职工薪酬5；支付租金：借：应付职工薪酬5，贷：银行存款5。' },
+
+            { id: 54, page: 3, type: 'multiple', 
+              text: '54.根据资料(1)-(3)，下列各项中，该企业本月的职工薪酬总额是（ ）。', 
+              options: ['A.413', 'B.406', 'C.400', 'D.411'], 
+              correct: ['A.413'], 
+              explanation: '职工薪酬总额=工资400 + 食堂补贴6 + 宿舍租金5 + 汽车非货币福利2 = 413万元。' },
+
+            { id: 55, page: 3, type: 'multiple', 
+              text: '55.根据资料(1)-(3)，下列各项中，该企业本月的利润表项目影响正确的是（ ）。', 
+              options: ['A.管理费用增加51.2', 'B.销售费用增加30.6', 'C.营业成本增加300', 'D.管理费用增加53.2'], 
+              correct: ['B.销售费用增加30.6', 'D.管理费用增加53.2'], 
+              explanation: '管理费用=工资50 + 食堂补贴1.2 + 汽车非货币福利2 = 53.2万元；销售费用=工资30 + 食堂补贴0.6 = 30.6万元；生产成本和制造费用最终计入营业成本，但本题营业成本增加额未给出，选项C不准确。' }
+        ];
+
+        let userAnswers = new Array(questionBank.length).fill(null);
+        let currentPage = 0;
+
+        function arraysEqual(arr1, arr2) {
+            if (!Array.isArray(arr1) || !Array.isArray(arr2)) return false;
+            if (arr1.length !== arr2.length) return false;
+            const s1 = [...arr1].sort();
+            const s2 = [...arr2].sort();
+            return s1.every((val, idx) => val === s2[idx]);
+        }
+
+        function collectAnswer(questionIndex) {
+            const q = questionBank[questionIndex];
+            if (q.type === 'single' || q.type === 'truefalse') {
+                const radios = document.getElementsByName(`q${q.id}`);
+                for (let r of radios) {
+                    if (r.checked) return r.value;
+                }
+                return null;
+            } else {
+                const cbs = document.getElementsByName(`q${q.id}`);
+                const selected = [];
+                for (let cb of cbs) {
+                    if (cb.checked) selected.push(cb.value);
+                }
+                return selected.length ? selected : null;
+            }
+        }
+
+        function renderPage(page) {
+            const container = document.getElementById(`page${page}`);
+            container.innerHTML = '';
+            const pageQuestions = questionBank.filter(q => q.page === page);
+            pageQuestions.forEach((q) => {
+                const globalIdx = questionBank.findIndex(item => item.id === q.id);
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.dataset.questionIndex = globalIdx;
+                
+                const header = document.createElement('div');
+                header.className = 'question-header';
+                const numSpan = document.createElement('span');
+                numSpan.className = 'q-num';
+                numSpan.innerText = `${q.id}`;
+                const typeSpan = document.createElement('span');
+                typeSpan.className = 'q-type';
+                if (q.type === 'single') typeSpan.innerText = '单选';
+                else if (q.type === 'truefalse') typeSpan.innerText = '判断';
+                else typeSpan.innerText = '多选';
+                header.appendChild(numSpan);
+                header.appendChild(typeSpan);
+                card.appendChild(header);
+
+                const qTextDiv = document.createElement('div');
+                qTextDiv.className = 'q-text';
+                qTextDiv.innerText = q.text;
+                card.appendChild(qTextDiv);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'options';
+
+                if (q.type === 'single' || q.type === 'truefalse') {
+                    q.options.forEach(opt => {
+                        const item = document.createElement('div');
+                        item.className = 'option-item';
+                        const radio = document.createElement('input');
+                        radio.type = 'radio';
+                        radio.name = `q${q.id}`;
+                        radio.value = opt;
+                        const prev = userAnswers[globalIdx];
+                        if (prev && prev === opt) radio.checked = true;
+                        const label = document.createElement('span');
+                        label.className = 'option-label';
+                        label.innerText = opt;
+                        item.appendChild(radio);
+                        item.appendChild(label);
+                        optionsDiv.appendChild(item);
+                    });
+                } else {
+                    q.options.forEach(opt => {
+                        const item = document.createElement('div');
+                        item.className = 'option-item';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.name = `q${q.id}`;
+                        cb.value = opt;
+                        const prev = userAnswers[globalIdx];
+                        if (prev && Array.isArray(prev) && prev.includes(opt)) cb.checked = true;
+                        const label = document.createElement('span');
+                        label.className = 'option-label';
+                        label.innerText = opt;
+                        item.appendChild(cb);
+                        item.appendChild(label);
+                        optionsDiv.appendChild(item);
+                    });
+                }
+                card.appendChild(optionsDiv);
+                container.appendChild(card);
+            });
+        }
+
+        function renderAllPages() {
+            for (let p = 0; p < 4; p++) renderPage(p);
+        }
+
+        function syncCurrentPageAnswers() {
+            const pageQuestions = questionBank.filter(q => q.page === currentPage);
+            pageQuestions.forEach(q => {
+                const globalIdx = questionBank.findIndex(item => item.id === q.id);
+                userAnswers[globalIdx] = collectAnswer(globalIdx);
+            });
+        }
+
+        function checkCurrentPage() {
+            syncCurrentPageAnswers();
+
+            const pageIndices = questionBank.reduce((acc, q, idx) => {
+                if (q.page === currentPage) acc.push(idx);
+                return acc;
+            }, []);
+
+            let correctCount = 0;
+            const wrongDetails = [];
+
+            pageIndices.forEach(idx => {
+                const q = questionBank[idx];
+                const userAns = userAnswers[idx];
+                const correctAns = q.correct;
+                let isCorrect = false;
+
+                if (userAns === null || userAns === undefined) {
+                    isCorrect = false;
+                } else {
+                    if (q.type === 'multiple') {
+                        if (Array.isArray(userAns) && Array.isArray(correctAns)) {
+                            isCorrect = arraysEqual(userAns, correctAns);
+                        } else {
+                            isCorrect = false;
+                        }
+                    } else {
+                        isCorrect = (userAns === correctAns);
+                    }
+                }
+
+                if (isCorrect) {
+                    correctCount++;
+                } else {
+                    wrongDetails.push({
+                        index: idx,
+                        id: q.id,
+                        text: q.text,
+                        correctAnswer: Array.isArray(correctAns) ? correctAns.join('、') : correctAns,
+                        userAnswer: userAns ? (Array.isArray(userAns) ? userAns.join('、') : userAns) : '(未选择)',
+                        explanation: q.explanation || '暂无解析。'  // 加入解析字段
+                    });
+                }
+            });
+
+            const total = pageIndices.length;
+            const score = correctCount;
+            const resultArea = document.getElementById('resultArea');
+            
+            let html = `<div class="score-panel">
+                <span style="display:flex; align-items:baseline; gap: 6px;">
+                    <span class="score-number">${score}</span>
+                    <span class="score-total">/ ${total}</span>
+                    <span style="margin-left: 10px; font-size: 1.2rem;">✅ 本页正确率 ${Math.round((score/total)*100)}%</span>
+                </span>`;
+
+            if (wrongDetails.length === 0) {
+                html += `<div style="background: #e6f7e6; padding: 16px; border-radius: 16px; margin-top: 16px; color: #1f5f2e;">🎉 本页全对！</div>`;
+            } else {
+                html += `<div class="mistake-info">⚠️ 本页共 ${wrongDetails.length} 题需要订正，正确答案及解析已显示在题目下方。</div>`;
+            }
+            html += `</div>`;
+            resultArea.innerHTML = html;
+
+            document.querySelectorAll('.dynamic-answer-hint').forEach(el => el.remove());
+
+            wrongDetails.forEach(wrong => {
+                const cards = document.querySelectorAll(`#page${currentPage} .question-card`);
+                const targetCard = Array.from(cards).find(card => parseInt(card.dataset.questionIndex) === wrong.index);
+                if (targetCard) {
+                    const hint = document.createElement('div');
+                    hint.className = 'answer-hint dynamic-answer-hint';
+                    hint.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="background:#eab308; color:white; padding:4px 12px; border-radius:30px; font-size:0.8rem;">📌 正确答案</span>
+                            <span style="font-weight:700; color:#1e293b;">${wrong.correctAnswer}</span>
+                        </div>
+                        <div style="color: #64748b; font-size:0.95rem;">
+                            你的选择：<span style="background: #f1f5f9; padding:3px 12px; border-radius: 18px;">${wrong.userAnswer}</span>
+                        </div>
+                        <div class="explanation-text">
+                            <span style="font-weight:600;">📖 解析：</span> ${wrong.explanation}
+                        </div>
+                    `;
+                    targetCard.appendChild(hint);
+                }
+            });
+        }
+
+        function resetCurrentPage() {
+            const pageIndices = questionBank.reduce((acc, q, idx) => {
+                if (q.page === currentPage) acc.push(idx);
+                return acc;
+            }, []);
+
+            pageIndices.forEach(idx => {
+                const q = questionBank[idx];
+                userAnswers[idx] = null;
+                if (q.type === 'single' || q.type === 'truefalse') {
+                    const radios = document.getElementsByName(`q${q.id}`);
+                    radios.forEach(r => r.checked = false);
+                } else {
+                    const cbs = document.getElementsByName(`q${q.id}`);
+                    cbs.forEach(cb => cb.checked = false);
+                }
+            });
+
+            document.querySelectorAll(`#page${currentPage} .dynamic-answer-hint`).forEach(el => el.remove());
+            document.getElementById('resultArea').innerHTML = `<div style="padding:20px; background:#f1f6fe; border-radius:20px; text-align:center;">🔄 当前页答案已重置。</div>`;
+        }
+
+        function switchPage(page) {
+            currentPage = page;
+            document.querySelectorAll('.page').forEach((p, idx) => {
+                if (idx === page) p.classList.add('active-page');
+                else p.classList.remove('active-page');
+            });
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                if (idx === page) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            document.getElementById('resultArea').innerHTML = `<div style="padding:18px; background:#f1f6fe; border-radius:18px; text-align:center;">📌 当前页共 ${questionBank.filter(q=>q.page===page).length} 题，点击「查答案」批改本页。</div>`;
+            document.querySelectorAll('.dynamic-answer-hint').forEach(el => el.remove());
+        }
+
+        function bindEvents() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const page = parseInt(e.target.dataset.page);
+                    switchPage(page);
+                });
+            });
+
+            document.getElementById('checkBtn').addEventListener('click', checkCurrentPage);
+            document.getElementById('resetBtn').addEventListener('click', resetCurrentPage);
+        }
+
+        renderAllPages();
+        bindEvents();
+        switchPage(0);
+    })();
+</script>
+</body>
+</html>
